@@ -86,5 +86,18 @@ describe( "Basic type checks", () => {
     expect( () => new Validator( 0     ).null().get() ).toThrow( TypeValidationError )
     expect( () => new Validator( false ).null().get() ).toThrow( TypeValidationError )
   } )
+
+  test( "checks for instance", () => {
+    const array = [ 1, 2, 3 ]
+    expect( new Validator( array ).instance( Array ).get() ).toBe( array )
+
+    class A {}
+    class B extends A {}
+
+    expect( () => new Validator( new B() ).instance( A ).get() ).not.toThrow( TypeValidationError )
+
+    // linter does the jpb, uncomment to show
+    // expect( () => new Validator( array ).instance( Number ).get() ).toThrow( TypeValidationError )
+  } )
 } )
 

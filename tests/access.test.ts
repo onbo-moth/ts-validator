@@ -22,6 +22,7 @@ describe( "Access methods", () => {
     expect( new Validator( [ 1, 2, 3 ] ).at( 1 ).get() ).toBe( 2 )
     expect( new Validator( Array       ).at( "of" ).get() ).toBe( Array.of )
     expect( new Validator( Object      ).at( "keys" ).get() ).toBe( Object.keys )
+    expect( new Validator( 9           ).at( "toExponential" ).get() ).toBe( Number.prototype.toExponential )
 
     expect( () => new Validator( [ 1, 2, 3 ] ).at( 4 ) ).toThrow( TypeValidationError )
   } )
