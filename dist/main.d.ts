@@ -120,7 +120,7 @@ export declare class Validator<T> {
      * @param checker Checker function that throws if array value doesn't satisfy type validation.
      * @throws { TypeValidationError } If value is not an array or if checker throws.
      */
-    arrayOf<U extends (value: unknown) => asserts value is U>(checker: U): Validator<AssertedType<U>[]>;
+    arrayOf<U extends (value: unknown) => asserts value is any>(checker: U): Validator<AssertedType<U>[]>;
     get(): T;
 }
 export {};
