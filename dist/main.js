@@ -46,6 +46,11 @@ class Validator {
             throw new TypeValidationError(`Expected boolean, got ${typeof this.value}`);
         return new Validator(this.value);
     }
+    array() {
+        if (!Array.isArray(this.value))
+            throw new TypeValidationError(`Expected array, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
     /**
      * Checks if the value is a symbol.
      * @throws { TypeValidationError } If value is not a symbol.
@@ -74,9 +79,8 @@ class Validator {
     function() {
         if (typeof this.value !== "function")
             throw new TypeValidationError(`Expected function, got ${typeof this.value}`);
-        if (this.value.prototype &&
-            this.value.prototype.constructor === this.value)
-            throw new TypeValidationError(`Expected function, got class constructor ( ${this.value} )`);
+        if (this.value.prototype && this.value.prototype.constructor === this.value)
+            throw new TypeValidationError(`Expected function, got class constructor ${this.value}`);
         return new Validator(this.value);
     }
     /**
@@ -97,7 +101,7 @@ class Validator {
      * @returns A new wrapper containing undefined.
      */
     undefined() {
-        if (typeof this.value !== "undefined")
+        if (this.value !== undefined)
             throw new TypeValidationError(`Expected undefined, got ${typeof this.value}`);
         return new Validator(this.value);
     }
@@ -110,6 +114,70 @@ class Validator {
         if (this.value !== null)
             throw new TypeValidationError(`Expected null, got ${typeof this.value}`);
         return new Validator(this.value);
+    }
+    // #endregion
+    // #region Checking methods
+    isNumber() {
+        return typeof this.value === "number";
+    }
+    isString() {
+        return typeof this.value === "string";
+    }
+    isBoolean() {
+        return typeof this.value === "boolean";
+    }
+    isArray() {
+        return Array.isArray(this.value);
+    }
+    isSymbol() {
+        return typeof this.value === "symbol";
+    }
+    isBigInt() {
+        return typeof this.value === "bigint";
+    }
+    isFunction() {
+        return typeof this.value === "function" &&
+            !(this.value.prototype &&
+                this.value.prototype.constructor === this.value);
+    }
+    isClass() {
+        return typeof this.value === "function" &&
+            this.value.prototype &&
+            this.value.prototype.constructor === this.value;
+    }
+    isUndefined() {
+        return typeof this.value === "undefined";
+    }
+    isNull() {
+        return this.value === null;
+    }
+    // #endregion
+    // #region Access methods
+    has(key) {
+        if (typeof this.value === "undefined" ||
+            this.value === null)
+            throw new TypeValidationError("Value is undefined or null.");
+        if (typeof this.value === "object" || typeof this.value === "function") {
+            if (key in this.value)
+                return true;
+            if (Object.getPrototypeOf(this.value) &&
+                Object.getPrototypeOf(this.value)[key])
+                return true;
+        }
+        return false;
+    }
+    at(key) {
+        if (typeof this.value === "undefined" ||
+            this.value === null)
+            throw new TypeValidationError("Value is undefined or null.");
+        if (typeof this.value === "object" || typeof this.value === "function") {
+            if (key in this.value)
+                return new Validator(this.value[key]);
+            if (Object.getPrototypeOf(this.value) &&
+                Object.getPrototypeOf(this.value)[key])
+                return new Validator(Object.getPrototypeOf(this.value)[key]);
+        }
+        throw new TypeValidationError(`Key "${String(key)}" does not exist in ${this.value}`);
     }
     // #endregion
     get() {

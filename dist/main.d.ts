@@ -16,7 +16,7 @@ export declare class Validator<T> {
      * Creates a new validator wrapper object for checking for type validity.
      * @param value Value.
      */
-    constructor(value: unknown);
+    constructor(value: T);
     /**
      * Checks if the value is a number.
      * @throws { TypeValidationError } If value is not a number.
@@ -35,6 +35,7 @@ export declare class Validator<T> {
      * @returns A new wrapper containing a boolean.
      */
     boolean(): Validator<boolean>;
+    array(): Validator<T & any[]>;
     /**
      * Checks if the value is a symbol.
      * @throws { TypeValidationError } If value is not a symbol.
@@ -71,6 +72,18 @@ export declare class Validator<T> {
      * @returns A new wrapper containing null.
      */
     null(): Validator<null>;
+    isNumber(): boolean;
+    isString(): boolean;
+    isBoolean(): boolean;
+    isArray(): boolean;
+    isSymbol(): boolean;
+    isBigInt(): boolean;
+    isFunction(): boolean;
+    isClass(): any;
+    isUndefined(): boolean;
+    isNull(): boolean;
+    has<K extends keyof T>(key: K): boolean;
+    at<K extends keyof T>(key: K): Validator<T[K]>;
     get(): T;
 }
 //# sourceMappingURL=main.d.ts.map

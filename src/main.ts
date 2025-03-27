@@ -7,7 +7,7 @@ export type TypeStringMap = {
   "string":    string,
   "boolean":   boolean,
   "symbol":    symbol,
-  "bigint":    bigint ,
+  "bigint":    bigint,
   "function":  ( ...args: any[] ) => any,
   "class":     new ( ...args: any[] ) => any,
   "undefined": undefined,
@@ -30,13 +30,13 @@ type IsArray< T >     = T extends any[]     ? T : never;
 // #endregion
 
 export class Validator< T > {
-  private value: unknown; 
+  private value: T; 
 
   /**
    * Creates a new validator wrapper object for checking for type validity.
    * @param value Value.
    */
-  constructor( value: unknown ) {
+  constructor( value: T ) {
     this.value = value;
   }
 
@@ -78,6 +78,13 @@ export class Validator< T > {
     return new Validator( this.value )
   }
 
+  array(): Validator< T & any[] > {
+    if( !Array.isArray( this.value ) )
+      throw new TypeValidationError( `Expected array, got ${ typeof this.value }` )
+
+    return new Validator( this.value )
+  }
+
   /**
    * Checks if the value is a symbol.
    * @throws { TypeValidationError } If value is not a symbol.
@@ -111,13 +118,10 @@ export class Validator< T > {
     if( typeof this.value !== "function" )
       throw new TypeValidationError( `Expected function, got ${ typeof this.value }` )
 
-    if( 
-      this.value.prototype &&
-      this.value.prototype.constructor === this.value 
-    )
-      throw new TypeValidationError( `Expected function, got class constructor ( ${ this.value } )` )
+    if( this.value.prototype && this.value.prototype.constructor === this.value )
+      throw new TypeValidationError( `Expected function, got class constructor ${ this.value }` ) 
 
-    return new Validator( this.value )
+    return new Validator( this.value as TypeStringMap[ "function" ] )
   }
 
   /**
@@ -127,13 +131,13 @@ export class Validator< T > {
    */
   class(): Validator< TypeStringMap[ "class" ] > {
     if( 
-      typeof this.value !== "function" || 
-      !this.value.prototype || 
-      this.value.prototype.constructor !== this.value 
+      typeof this.value !== "function" ||
+      !this.value.prototype ||
+      this.value.prototype.constructor !== this.value
     ) 
       throw new TypeValidationError( `Expected class, got ${ typeof this.value }` )
 
-    return new Validator( this.value )
+    return new Validator( this.value as TypeStringMap[ "class" ] )
   }
 
   /**
@@ -142,10 +146,10 @@ export class Validator< T > {
    * @returns A new wrapper containing undefined.
    */
   undefined(): Validator< undefined > {
-    if( typeof this.value !== "undefined" )
+    if( this.value !== undefined )
       throw new TypeValidationError( `Expected undefined, got ${ typeof this.value }` )
 
-    return new Validator( this.value )
+    return new Validator( this.value as undefined )
   }
 
   /**
@@ -157,8 +161,100 @@ export class Validator< T > {
     if( this.value !== null ) 
       throw new TypeValidationError( `Expected null, got ${ typeof this.value }` )
 
-    return new Validator( this.value )
+    return new Validator( this.value as null )
   }
+
+  // #endregion
+
+  // #region Checking methods
+
+  isNumber() {
+    return typeof this.value === "number"
+  }
+
+  isString() {
+    return typeof this.value === "string"
+  }
+
+  isBoolean() {
+    return typeof this.value === "boolean"
+  }
+
+  isArray() {
+    return Array.isArray( this.value )
+  }
+
+  isSymbol() {
+    return typeof this.value === "symbol"
+  }
+
+  isBigInt() {
+    return typeof this.value === "bigint"
+  }
+
+  isFunction() {
+    return typeof this.value === "function" && 
+           !( 
+             this.value.prototype && 
+             this.value.prototype.constructor === this.value 
+           )
+  }
+
+  isClass() {
+    return typeof this.value === "function" &&
+           this.value.prototype &&
+           this.value.prototype.constructor === this.value
+  }
+
+  isUndefined() {
+    return typeof this.value === "undefined"
+  }
+
+  isNull() {
+    return this.value === null
+  }
+
+  // #endregion
+
+  // #region Access methods
+  
+  has< K extends keyof T >( key: K ): boolean {
+    if( 
+      typeof this.value === "undefined" ||
+      this.value === null
+    ) 
+      throw new TypeValidationError( "Value is undefined or null." )
+
+    if( typeof this.value === "object" || typeof this.value === "function" ){
+      if( key in this.value ) return true
+
+      if( 
+        Object.getPrototypeOf( this.value ) && 
+        Object.getPrototypeOf( this.value )[ key ]
+      ) return true
+    }
+
+    return false
+  }
+
+  at< K extends keyof T >( key: K ): Validator< T[ K ] > {
+    if( 
+      typeof this.value === "undefined" ||
+      this.value === null
+    ) 
+      throw new TypeValidationError( "Value is undefined or null." )
+
+    if( typeof this.value === "object" || typeof this.value === "function" ){
+      if( key in this.value ) return new Validator( this.value[ key ] )
+
+      if( 
+        Object.getPrototypeOf( this.value ) && 
+        Object.getPrototypeOf( this.value )[ key ]
+      ) return new Validator( Object.getPrototypeOf( this.value )[ key ] )
+    }
+
+    throw new TypeValidationError( `Key "${ String( key ) }" does not exist in ${ this.value }` )
+  } 
 
   // #endregion
 
