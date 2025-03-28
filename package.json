@@ -1,6 +1,6 @@
 {
   "name": "ts-validator",
-  "type": "module",
+  "type": "commonjs",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "directories": {
