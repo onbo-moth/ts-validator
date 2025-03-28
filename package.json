@@ -3,6 +3,7 @@
   "type": "commonjs",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
+  "private": true,
   "directories": {
     "test": "tests"
   },
