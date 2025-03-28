@@ -296,6 +296,14 @@ export class Validator< T > {
 
   // #region Object checks
 
+  /**
+   * Asserts each key in value by using assertion functions.
+   * @param object Collection of assertion functions for given keys.
+   * @throws { TypeValidationError } If value is undefined or null
+   * @throws { TypeValidationError } If value lacks a key.
+   * @throws { TypeValidationError } If value's property fails assertion function.
+   * @returns 
+   */
   contains< V extends {
     [ key: PropertyKey ]: ( value: unknown ) => asserts value is unknown
   } >( 

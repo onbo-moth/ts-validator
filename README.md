@@ -1,3 +1,3 @@
 # ts-validator
 
-Checks unknown values at runtime for type validity.
+Asserts values at runtime and compile time for type validity.
