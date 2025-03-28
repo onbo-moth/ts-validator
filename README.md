@@ -41,8 +41,8 @@ These methods check without throwing an error.
 ```ts
 const value = new Validator( 99 )
 
-console.log( v.isNumber() ) // true
-console.log( v.isString() ) // false
+console.log( value.isNumber() ) // true
+console.log( value.isString() ) // false
 ```
 
 ### Access methods ( `has()`, `at()` )
