@@ -27,7 +27,7 @@ type IsBigint< T >    = T extends bigint    ? T : never;
 type IsFunction< T >  = T extends TypeStringMap[ "function" ] ? T : never;
 type IsClass< T >     = T extends TypeStringMap[ "class" ] ? T : never;
 type IsUndefined< T > = T extends undefined ? T : never;
-type IsArray< T >     = T extends any[]     ? T : never;
+type IsArray< T >     = T extends unknown[] ? T : never;
 
 // #endregion
 
@@ -80,7 +80,7 @@ export class Validator< T > {
     return new Validator( this.value )
   }
 
-  array(): Validator< T & any[] > {
+  array(): Validator< T & unknown[] > {
     if( !Array.isArray( this.value ) )
       throw new TypeValidationError( `Expected array, got ${ typeof this.value }` )
 
@@ -239,7 +239,7 @@ export class Validator< T > {
    * @throws { TypeValidationError } If value is undefined or null.
    * @returns Boolean indicating presence of given key.
    */
-  has< K extends keyof T >( key: K ): boolean {
+  has< K extends PropertyKey >( key: K ): boolean {
     if( 
       typeof this.value === "undefined" ||
       this.value === null
@@ -257,7 +257,7 @@ export class Validator< T > {
    * @throws { TypeValidationError } If value is undefined or null, or if the key doesn't exist.
    * @returns A new validator wrapper for the value contained in the key.
    */
-  at< K extends keyof T >( key: K ): Validator< T[ K ] > {
+  at< K extends PropertyKey >( key: K ): Validator< K extends keyof T ? T[ K ] : unknown > {
     if( 
       typeof this.value === "undefined" ||
       this.value === null
@@ -274,7 +274,59 @@ export class Validator< T > {
 
   // #endregion
 
-  // #region Static checking methods
+  // #region Array checks
+
+  /**
+   * Checks each element of array for type validity.
+   * @param checker Checker function that throws if array value doesn't satisfy type validation.
+   * @throws { TypeValidationError } If value is not an array or if checker throws.
+   */
+  arrayOf< U extends ( value: unknown ) => asserts value is unknown >( checker: U ): Validator< AssertedType< U >[] > {
+    if( !Array.isArray( this.value ) )
+      throw new TypeValidationError( `Expected array, got ${ typeof this.value }` )
+
+    this.value.forEach( element => {
+      checker( element )
+    } )
+
+    return new Validator( this.value as AssertedType< U >[] )
+  }
+
+  // #endregion
+
+  // #region Object checks
+
+  contains< V extends {
+    [ key: PropertyKey ]: ( value: unknown ) => asserts value is unknown
+  } >( 
+    object: V 
+  ): Validator< T & {
+    [ key in keyof V ]: AssertedType< V[ key ] > 
+  } > {
+    if( typeof this.value === "undefined" || this.value === null )
+      throw new TypeValidationError( `Value is undefined or null.` )
+
+    const val = Object( this.value )
+
+    for( const key in object ) {
+      if( !( key in val ) )
+        throw new TypeValidationError( `Value is missing a key: ${ key }` )
+
+      const assert: ( value: unknown ) => asserts value is unknown = object[ key ] 
+      
+      assert( val[ key ] )
+    }
+
+    // no throws, nice
+
+    return new Validator( this.value as T & {
+      [ key in keyof V ]: AssertedType< V[ key ] >
+    } )
+  }
+
+  // #endregion
+  
+  // #region Static assertion methods
 
   static number( value: unknown ): asserts value is number {
     if( typeof value !== "number" )
@@ -336,26 +388,6 @@ export class Validator< T > {
   static instance< T, U extends TypeStringMap[ "class" ] >( value: T, constructor: U ): asserts value is InstanceType< U >  {
     if( !( value instanceof constructor ) )
       throw new TypeValidationError( `Expected value to be an instance of ${ constructor }, got ${ value }`)
-  }
-
-  // #endregion
-
-  // #region Array checks
-
-  /**
-   * Checks each element of array for type validity.
-   * @param checker Checker function that throws if array value doesn't satisfy type validation.
-   * @throws { TypeValidationError } If value is not an array or if checker throws.
-   */
-  arrayOf< U extends ( value: unknown ) => asserts value is any >( checker: U ): Validator< AssertedType< U >[] > {
-    if( !Array.isArray( this.value ) )
-      throw new TypeValidationError( `Expected array, got ${ typeof this.value }` )
-
-    this.value.forEach( element => {
-      checker( element )
-    } )
-
-    return new Validator( this.value as AssertedType< U >[] )
   }
 
   // #endregion

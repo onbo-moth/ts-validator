@@ -193,7 +193,37 @@ class Validator {
         return new Validator(obj[key]);
     }
     // #endregion
-    // #region Static checking methods
+    // #region Array checks
+    /**
+     * Checks each element of array for type validity.
+     * @param checker Checker function that throws if array value doesn't satisfy type validation.
+     * @throws { TypeValidationError } If value is not an array or if checker throws.
+     */
+    arrayOf(checker) {
+        if (!Array.isArray(this.value))
+            throw new TypeValidationError(`Expected array, got ${typeof this.value}`);
+        this.value.forEach(element => {
+            checker(element);
+        });
+        return new Validator(this.value);
+    }
+    // #endregion
+    // #region Object checks
+    contains(object) {
+        if (typeof this.value === "undefined" || this.value === null)
+            throw new TypeValidationError(`Value is undefined or null.`);
+        const val = Object(this.value);
+        for (const key in object) {
+            if (!(key in val))
+                throw new TypeValidationError(`Value is missing a key: ${key}`);
+            const assert = object[key];
+            assert(val[key]);
+        }
+        // no throws, nice
+        return new Validator(this.value);
+    }
+    // #endregion
+    // #region Static assertion methods
     static number(value) {
         if (typeof value !== "number")
             throw new TypeValidationError(`Expected number, got ${typeof value}`);
@@ -241,21 +271,6 @@ class Validator {
     static instance(value, constructor) {
         if (!(value instanceof constructor))
             throw new TypeValidationError(`Expected value to be an instance of ${constructor}, got ${value}`);
-    }
-    // #endregion
-    // #region Array checks
-    /**
-     * Checks each element of array for type validity.
-     * @param checker Checker function that throws if array value doesn't satisfy type validation.
-     * @throws { TypeValidationError } If value is not an array or if checker throws.
-     */
-    arrayOf(checker) {
-        if (!Array.isArray(this.value))
-            throw new TypeValidationError(`Expected array, got ${typeof this.value}`);
-        this.value.forEach(element => {
-            checker(element);
-        });
-        return new Validator(this.value);
     }
     // #endregion
     get() {

@@ -2,6 +2,7 @@
   "name": "ts-validator",
   "type": "module",
   "main": "dist/src/main.js",
+  "types": "dist/src/main.d.ts",
   "directories": {
     "test": "tests"
   },

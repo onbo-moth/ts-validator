@@ -36,7 +36,7 @@ export declare class Validator<T> {
      * @returns A new wrapper containing a boolean.
      */
     boolean(): Validator<boolean>;
-    array(): Validator<T & any[]>;
+    array(): Validator<T & unknown[]>;
     /**
      * Checks if the value is a symbol.
      * @throws { TypeValidationError } If value is not a symbol.
@@ -96,14 +96,25 @@ export declare class Validator<T> {
      * @throws { TypeValidationError } If value is undefined or null.
      * @returns Boolean indicating presence of given key.
      */
-    has<K extends keyof T>(key: K): boolean;
+    has<K extends PropertyKey>(key: K): boolean;
     /**
      * Checks if value contains a key and creates a new validator wrapper of the property.
      * @param key Key of the value.
      * @throws { TypeValidationError } If value is undefined or null, or if the key doesn't exist.
      * @returns A new validator wrapper for the value contained in the key.
      */
-    at<K extends keyof T>(key: K): Validator<T[K]>;
+    at<K extends PropertyKey>(key: K): Validator<K extends keyof T ? T[K] : unknown>;
+    /**
+     * Checks each element of array for type validity.
+     * @param checker Checker function that throws if array value doesn't satisfy type validation.
+     * @throws { TypeValidationError } If value is not an array or if checker throws.
+     */
+    arrayOf<U extends (value: unknown) => asserts value is unknown>(checker: U): Validator<AssertedType<U>[]>;
+    contains<V extends {
+        [key: PropertyKey]: (value: unknown) => asserts value is unknown;
+    }>(object: V): Validator<T & {
+        [key in keyof V]: AssertedType<V[key]>;
+    }>;
     static number(value: unknown): asserts value is number;
     static string(value: unknown): asserts value is string;
     static boolean(value: unknown): asserts value is boolean;
@@ -115,12 +126,6 @@ export declare class Validator<T> {
     static undefined(value: unknown): asserts value is undefined;
     static null(value: unknown): asserts value is null;
     static instance<T, U extends TypeStringMap["class"]>(value: T, constructor: U): asserts value is InstanceType<U>;
-    /**
-     * Checks each element of array for type validity.
-     * @param checker Checker function that throws if array value doesn't satisfy type validation.
-     * @throws { TypeValidationError } If value is not an array or if checker throws.
-     */
-    arrayOf<U extends (value: unknown) => asserts value is any>(checker: U): Validator<AssertedType<U>[]>;
     get(): T;
 }
 export {};
