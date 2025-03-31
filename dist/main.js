@@ -209,6 +209,14 @@ class Validator {
     }
     // #endregion
     // #region Object checks
+    /**
+     * Asserts each key in value by using assertion functions.
+     * @param object Collection of assertion functions for given keys.
+     * @throws { TypeValidationError } If value is undefined or null
+     * @throws { TypeValidationError } If value lacks a key.
+     * @throws { TypeValidationError } If value's property fails assertion function.
+     * @returns
+     */
     contains(object) {
         if (typeof this.value === "undefined" || this.value === null)
             throw new TypeValidationError(`Value is undefined or null.`);
@@ -273,6 +281,79 @@ class Validator {
             throw new TypeValidationError(`Expected value to be an instance of ${constructor}, got ${value}`);
     }
     // #endregion
+    // #region Static nullible assertion methods.
+    static nullible = {
+        number(value) {
+            if (value === null)
+                return;
+            if (typeof value !== "number")
+                throw new TypeValidationError(`Expected number, got ${typeof value}`);
+        },
+        string(value) {
+            if (value === null)
+                return;
+            if (typeof value !== "string")
+                throw new TypeValidationError(`Expected string, got ${typeof value}`);
+        },
+        boolean(value) {
+            if (value === null)
+                return;
+            if (typeof value !== "boolean")
+                throw new TypeValidationError(`Expected boolean, got ${typeof value}`);
+        },
+        array(value) {
+            if (value === null)
+                return;
+            if (!Array.isArray(value))
+                throw new TypeValidationError(`Expected array, got ${typeof value}`);
+        },
+        symbol(value) {
+            if (value === null)
+                return;
+            if (typeof value !== "symbol")
+                throw new TypeValidationError(`Expected symbol, got ${typeof value}`);
+        },
+        bigint(value) {
+            if (value === null)
+                return;
+            if (typeof value !== "bigint")
+                throw new TypeValidationError(`Expected BigInt, got ${typeof value}`);
+        },
+        function(value) {
+            if (value === null)
+                return;
+            if (typeof value !== "function")
+                throw new TypeValidationError(`Expected function, got ${typeof value}`);
+            if (value.prototype && value.prototype.constructor === value)
+                throw new TypeValidationError(`Expected function, got class constructor ${value}`);
+        },
+        class(value) {
+            if (value === null)
+                return;
+            if (typeof value !== "function" ||
+                !value.prototype ||
+                value.prototype.constructor !== value)
+                throw new TypeValidationError(`Expected class, got ${typeof value}`);
+        },
+        undefined(value) {
+            if (value === null)
+                return;
+            if (value !== undefined)
+                throw new TypeValidationError(`Expected undefined, got ${typeof value}`);
+        },
+        instance(value, constructor) {
+            if (value === null)
+                return;
+            if (!(value instanceof constructor))
+                throw new TypeValidationError(`Expected value to be an instance of ${constructor}, got ${value}`);
+        }
+    };
+    // #endregion
+    assert(func) {
+        func(this.value);
+        // i guess it doesnt error out soo
+        return new Validator(this.value);
+    }
     get() {
         return this.value;
     }

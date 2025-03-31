@@ -110,6 +110,14 @@ export declare class Validator<T> {
      * @throws { TypeValidationError } If value is not an array or if checker throws.
      */
     arrayOf<U extends (value: unknown) => asserts value is unknown>(checker: U): Validator<AssertedType<U>[]>;
+    /**
+     * Asserts each key in value by using assertion functions.
+     * @param object Collection of assertion functions for given keys.
+     * @throws { TypeValidationError } If value is undefined or null
+     * @throws { TypeValidationError } If value lacks a key.
+     * @throws { TypeValidationError } If value's property fails assertion function.
+     * @returns
+     */
     contains<V extends {
         [key: PropertyKey]: (value: unknown) => asserts value is unknown;
     }>(object: V): Validator<T & {
@@ -126,6 +134,19 @@ export declare class Validator<T> {
     static undefined(value: unknown): asserts value is undefined;
     static null(value: unknown): asserts value is null;
     static instance<T, U extends TypeStringMap["class"]>(value: T, constructor: U): asserts value is InstanceType<U>;
+    static nullible: {
+        number(value: unknown): asserts value is number | null;
+        string(value: unknown): asserts value is string | null;
+        boolean(value: unknown): asserts value is boolean | null;
+        array(value: unknown): asserts value is unknown[] | null;
+        symbol(value: unknown): asserts value is symbol | null;
+        bigint(value: unknown): asserts value is BigInt | null;
+        function(value: unknown): asserts value is TypeStringMap["function"] | null;
+        class(value: unknown): asserts value is TypeStringMap["class"] | null;
+        undefined(value: unknown): asserts value is undefined | null;
+        instance<U extends TypeStringMap["class"]>(value: unknown, constructor: U): asserts value is InstanceType<U> | null;
+    };
+    assert<T extends (value: unknown) => asserts value is unknown>(func: T): Validator<AssertedType<T>>;
     get(): T;
 }
 export {};

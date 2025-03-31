@@ -400,6 +400,86 @@ export class Validator< T > {
 
   // #endregion
 
+  // #region Static nullible assertion methods.
+  static nullible = {
+    number( value: unknown ): asserts value is number | null {
+      if( value === null ) return
+      if( typeof value !== "number" )
+        throw new TypeValidationError( `Expected number, got ${ typeof value }` )
+    },
+
+    string( value: unknown ): asserts value is string | null {
+      if( value === null ) return
+      if( typeof value !== "string" )
+        throw new TypeValidationError( `Expected string, got ${ typeof value }` )
+    },
+
+    boolean( value: unknown ): asserts value is boolean | null {
+      if( value === null ) return
+      if( typeof value !== "boolean" )
+        throw new TypeValidationError( `Expected boolean, got ${ typeof value }` )
+    },
+
+    array( value: unknown ): asserts value is unknown[] | null {
+      if( value === null ) return
+      if( !Array.isArray( value ) )
+        throw new TypeValidationError( `Expected array, got ${ typeof value }` )
+    },
+
+    symbol( value: unknown ): asserts value is symbol | null {
+      if( value === null ) return
+      if( typeof value !== "symbol" )
+        throw new TypeValidationError( `Expected symbol, got ${ typeof value }` )
+    },
+
+    bigint( value: unknown ): asserts value is BigInt | null {
+      if( value === null ) return
+      if( typeof value !== "bigint" )
+        throw new TypeValidationError( `Expected BigInt, got ${ typeof value }` )
+    },
+
+    function( value: unknown ): asserts value is TypeStringMap[ "function" ] | null {
+      if( value === null ) return
+      if( typeof value !== "function" )
+        throw new TypeValidationError( `Expected function, got ${ typeof value }` )
+
+      if( value.prototype && value.prototype.constructor === value )
+        throw new TypeValidationError( `Expected function, got class constructor ${ value }` )
+    },
+
+    class( value: unknown ): asserts value is TypeStringMap[ "class" ] | null {
+      if( value === null ) return
+      if( 
+        typeof value !== "function" ||
+        !value.prototype ||
+        value.prototype.constructor !== value
+      )
+        throw new TypeValidationError( `Expected class, got ${ typeof value }` )
+    }, 
+
+    undefined( value: unknown ): asserts value is undefined | null { // wow....
+      if( value === null ) return
+      if( value !== undefined ) 
+        throw new TypeValidationError( `Expected undefined, got ${ typeof value }` )
+    },
+
+    instance< U extends TypeStringMap[ "class" ] >( value: unknown, constructor: U ): asserts value is InstanceType< U > | null {
+      if( value === null ) return
+      if( !( value instanceof constructor ) )
+        throw new TypeValidationError( `Expected value to be an instance of ${ constructor }, got ${ value }`)
+    }
+  }
+
+  // #endregion
+
+  assert< T extends ( value: unknown ) => asserts value is unknown >( func: T ): Validator< AssertedType< T > > {
+    func( this.value )
+
+    // i guess it doesnt error out soo
+
+    return new Validator< AssertedType< T > >( this.value as AssertedType< T > )
+  }
+  
   get(): T {
     return this.value as T
   }
