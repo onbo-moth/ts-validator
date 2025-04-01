@@ -400,8 +400,8 @@ export class Validator< T > {
 
   // #endregion
 
-  // #region Static nullible assertion methods.
-  static nullible = {
+  // #region Static nullable assertion methods.
+  static nullable = {
     number( value: unknown ): asserts value is number | null {
       if( value === null ) return
       if( typeof value !== "number" )
@@ -479,6 +479,11 @@ export class Validator< T > {
 
     return new Validator< AssertedType< T > >( this.value as AssertedType< T > )
   }
+
+  /**
+   * @deprecated in order to not break cuz making a typo here is fine but in a project that could be used by others it might be PAIN
+   */
+  static nullible = Validator.nullable
   
   get(): T {
     return this.value as T

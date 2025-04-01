@@ -281,8 +281,8 @@ class Validator {
             throw new TypeValidationError(`Expected value to be an instance of ${constructor}, got ${value}`);
     }
     // #endregion
-    // #region Static nullible assertion methods.
-    static nullible = {
+    // #region Static nullable assertion methods.
+    static nullable = {
         number(value) {
             if (value === null)
                 return;
@@ -354,6 +354,10 @@ class Validator {
         // i guess it doesnt error out soo
         return new Validator(this.value);
     }
+    /**
+     * @deprecated in order to not break cuz making a typo here is fine but in a project that could be used by others it might be PAIN
+     */
+    static nullible = Validator.nullable;
     get() {
         return this.value;
     }

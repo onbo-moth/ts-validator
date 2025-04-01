@@ -134,7 +134,7 @@ export declare class Validator<T> {
     static undefined(value: unknown): asserts value is undefined;
     static null(value: unknown): asserts value is null;
     static instance<T, U extends TypeStringMap["class"]>(value: T, constructor: U): asserts value is InstanceType<U>;
-    static nullible: {
+    static nullable: {
         number(value: unknown): asserts value is number | null;
         string(value: unknown): asserts value is string | null;
         boolean(value: unknown): asserts value is boolean | null;
@@ -147,6 +147,21 @@ export declare class Validator<T> {
         instance<U extends TypeStringMap["class"]>(value: unknown, constructor: U): asserts value is InstanceType<U> | null;
     };
     assert<T extends (value: unknown) => asserts value is unknown>(func: T): Validator<AssertedType<T>>;
+    /**
+     * @deprecated in order to not break cuz making a typo here is fine but in a project that could be used by others it might be PAIN
+     */
+    static nullible: {
+        number(value: unknown): asserts value is number | null;
+        string(value: unknown): asserts value is string | null;
+        boolean(value: unknown): asserts value is boolean | null;
+        array(value: unknown): asserts value is unknown[] | null;
+        symbol(value: unknown): asserts value is symbol | null;
+        bigint(value: unknown): asserts value is BigInt | null;
+        function(value: unknown): asserts value is TypeStringMap["function"] | null;
+        class(value: unknown): asserts value is TypeStringMap["class"] | null;
+        undefined(value: unknown): asserts value is undefined | null;
+        instance<U extends TypeStringMap["class"]>(value: unknown, constructor: U): asserts value is InstanceType<U> | null;
+    };
     get(): T;
 }
 export {};

@@ -9,7 +9,7 @@ describe( "Static assertion methods", () => {
     b = 1 
   }
 
-  test( "Nonnullible methods.", () => {
+  test( "Nonnullable methods.", () => {
     expect( () => Validator.number( 1 ) ).not.toThrow()
     expect( () => Validator.string( "yay" ) ).not.toThrow()
     expect( () => Validator.boolean( true ) ).not.toThrow()
@@ -35,27 +35,27 @@ describe( "Static assertion methods", () => {
     expect( () => Validator.instance( new A(), B ) ).toThrow()
   } )
 
-  test( "Nullible methods.", () => {
-    expect( () => Validator.nullible.number( 1 ) ).not.toThrow()
-    expect( () => Validator.nullible.string( "yay" ) ).not.toThrow()
-    expect( () => Validator.nullible.boolean( true ) ).not.toThrow()
-    expect( () => Validator.nullible.array( [ 1, 2, 3 ] ) ).not.toThrow()
-    expect( () => Validator.nullible.symbol( Symbol() ) ).not.toThrow()
-    expect( () => Validator.nullible.bigint( BigInt( "123123123123" ) ) ).not.toThrow()
-    expect( () => Validator.nullible.function( Math.floor ) ).not.toThrow()
-    expect( () => Validator.nullible.class( A ) ).not.toThrow()
-    expect( () => Validator.nullible.undefined( undefined ) ).not.toThrow()
-    expect( () => Validator.nullible.instance( new B(), A ) ).not.toThrow()
+  test( "Nullable methods.", () => {
+    expect( () => Validator.nullable.number( 1 ) ).not.toThrow()
+    expect( () => Validator.nullable.string( "yay" ) ).not.toThrow()
+    expect( () => Validator.nullable.boolean( true ) ).not.toThrow()
+    expect( () => Validator.nullable.array( [ 1, 2, 3 ] ) ).not.toThrow()
+    expect( () => Validator.nullable.symbol( Symbol() ) ).not.toThrow()
+    expect( () => Validator.nullable.bigint( BigInt( "123123123123" ) ) ).not.toThrow()
+    expect( () => Validator.nullable.function( Math.floor ) ).not.toThrow()
+    expect( () => Validator.nullable.class( A ) ).not.toThrow()
+    expect( () => Validator.nullable.undefined( undefined ) ).not.toThrow()
+    expect( () => Validator.nullable.instance( new B(), A ) ).not.toThrow()
 
-    expect( () => Validator.nullible.number( null ) ).not.toThrow()
-    expect( () => Validator.nullible.string( null ) ).not.toThrow()
-    expect( () => Validator.nullible.boolean( null ) ).not.toThrow()
-    expect( () => Validator.nullible.array( null ) ).not.toThrow()
-    expect( () => Validator.nullible.symbol( null ) ).not.toThrow()
-    expect( () => Validator.nullible.bigint( null ) ).not.toThrow()
-    expect( () => Validator.nullible.function( null ) ).not.toThrow()
-    expect( () => Validator.nullible.class( null ) ).not.toThrow()
-    expect( () => Validator.nullible.undefined( null ) ).not.toThrow()
-    expect( () => Validator.nullible.instance( null, A ) ).not.toThrow()
+    expect( () => Validator.nullable.number( null ) ).not.toThrow()
+    expect( () => Validator.nullable.string( null ) ).not.toThrow()
+    expect( () => Validator.nullable.boolean( null ) ).not.toThrow()
+    expect( () => Validator.nullable.array( null ) ).not.toThrow()
+    expect( () => Validator.nullable.symbol( null ) ).not.toThrow()
+    expect( () => Validator.nullable.bigint( null ) ).not.toThrow()
+    expect( () => Validator.nullable.function( null ) ).not.toThrow()
+    expect( () => Validator.nullable.class( null ) ).not.toThrow()
+    expect( () => Validator.nullable.undefined( null ) ).not.toThrow()
+    expect( () => Validator.nullable.instance( null, A ) ).not.toThrow()
   } )
 } )
