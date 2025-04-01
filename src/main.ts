@@ -481,7 +481,7 @@ export class Validator< T > {
   }
 
   /**
-   * @deprecated in order to not break cuz making a typo here is fine but in a project that could be used by others it might be PAIN
+   * @deprecated use `nullable` instead. made in order to not break cuz making a typo here is fine but in a project that could be used by others it might be PAIN
    */
   static nullible = Validator.nullable
   
