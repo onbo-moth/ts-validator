@@ -67,6 +67,17 @@ Validator.number( 42   ) // Doesn't throw.
 Validator.number( "42" ) // Throws an error. 
 ```
 
+### Static nullable assertion methods
+
+```ts
+// Both work!
+Validator.nullable.number( 42 )
+Validator.nullable.number( null )
+
+// This doesn't work!
+Validator.nullable.string( 42 )
+```
+
 ### Array checks ( `arrayOf()` )
 
 Ensures all elements in an array follow a type.
