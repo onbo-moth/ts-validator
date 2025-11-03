@@ -1,6 +1,7 @@
 export declare class TypeValidationError extends Error {
 }
-type AssertedType<T> = T extends (value: unknown) => asserts value is infer U ? U : never;
+export type AssertedType<T> = T extends (value: unknown) => asserts value is infer U ? U : never;
+export type ValidatorFunction<T> = (value: unknown) => asserts value is T;
 export type TypeStringMap = {
     "number": number;
     "string": string;
@@ -164,5 +165,4 @@ export declare class Validator<T> {
     };
     get(): T;
 }
-export {};
 //# sourceMappingURL=main.d.ts.map

@@ -1,6 +1,7 @@
 export class TypeValidationError extends Error {};
 
-type AssertedType< T > = T extends ( value: unknown ) => asserts value is infer U ? U : never;
+export type AssertedType< T > = T extends ( value: unknown ) => asserts value is infer U ? U : never;
+export type ValidatorFunction< T > = ( value: unknown ) => asserts value is T
 
 // #region Type string map
 
