@@ -8,6 +8,7 @@ export type TypeStringMap = {
     "boolean": boolean;
     "symbol": symbol;
     "bigint": bigint;
+    "object": object;
     "function": (...args: any[]) => any;
     "class": new (...args: any[]) => any;
     "undefined": undefined;
@@ -37,6 +38,11 @@ export declare class Validator<T> {
      * @returns A new wrapper containing a boolean.
      */
     boolean(): Validator<boolean>;
+    /**
+     * Checks if the value is an array.
+     * @throws { TypeValidationError } If value is not an array.
+     * @returns A new wrapper containing an array.
+     */
     array(): Validator<T & unknown[]>;
     /**
      * Checks if the value is a symbol.
@@ -50,6 +56,11 @@ export declare class Validator<T> {
      * @returns A new wrapper containing a BigInt.
      */
     bigint(): Validator<bigint>;
+    /**
+     * Checks if the value is a basic object (non-function)
+     *
+     */
+    object(): Validator<object>;
     /**
      * Checks if the value is a function and not a class constructor.
      * @throws { TypeValidationError } If value is not a function, or is a constructor.
@@ -87,6 +98,7 @@ export declare class Validator<T> {
     isArray(): boolean;
     isSymbol(): boolean;
     isBigInt(): boolean;
+    isObject(): boolean;
     isFunction(): boolean;
     isClass(): any;
     isUndefined(): boolean;
@@ -130,6 +142,7 @@ export declare class Validator<T> {
     static array(value: unknown): asserts value is unknown[];
     static symbol(value: unknown): asserts value is symbol;
     static bigint(value: unknown): asserts value is BigInt;
+    static object(value: unknown): asserts value is object;
     static function(value: unknown): asserts value is TypeStringMap["function"];
     static class(value: unknown): asserts value is TypeStringMap["class"];
     static undefined(value: unknown): asserts value is undefined;
@@ -142,6 +155,7 @@ export declare class Validator<T> {
         array(value: unknown): asserts value is unknown[] | null;
         symbol(value: unknown): asserts value is symbol | null;
         bigint(value: unknown): asserts value is BigInt | null;
+        object(value: unknown): asserts value is object | null;
         function(value: unknown): asserts value is TypeStringMap["function"] | null;
         class(value: unknown): asserts value is TypeStringMap["class"] | null;
         undefined(value: unknown): asserts value is undefined | null;
@@ -149,7 +163,7 @@ export declare class Validator<T> {
     };
     assert<T extends (value: unknown) => asserts value is unknown>(func: T): Validator<AssertedType<T>>;
     /**
-     * @deprecated in order to not break cuz making a typo here is fine but in a project that could be used by others it might be PAIN
+     * @deprecated use `nullable` instead. made in order to not break cuz making a typo here is fine but in a project that could be used by others it might be PAIN
      */
     static nullible: {
         number(value: unknown): asserts value is number | null;
@@ -158,6 +172,7 @@ export declare class Validator<T> {
         array(value: unknown): asserts value is unknown[] | null;
         symbol(value: unknown): asserts value is symbol | null;
         bigint(value: unknown): asserts value is BigInt | null;
+        object(value: unknown): asserts value is object | null;
         function(value: unknown): asserts value is TypeStringMap["function"] | null;
         class(value: unknown): asserts value is TypeStringMap["class"] | null;
         undefined(value: unknown): asserts value is undefined | null;

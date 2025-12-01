@@ -46,6 +46,11 @@ class Validator {
             throw new TypeValidationError(`Expected boolean, got ${typeof this.value}`);
         return new Validator(this.value);
     }
+    /**
+     * Checks if the value is an array.
+     * @throws { TypeValidationError } If value is not an array.
+     * @returns A new wrapper containing an array.
+     */
     array() {
         if (!Array.isArray(this.value))
             throw new TypeValidationError(`Expected array, got ${typeof this.value}`);
@@ -69,6 +74,17 @@ class Validator {
     bigint() {
         if (typeof this.value !== "bigint")
             throw new TypeValidationError(`Expected bigint, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a basic object (non-function)
+     *
+     */
+    object() {
+        if (this.value === null)
+            throw new TypeValidationError(`Expected object, got null`);
+        if (typeof this.value !== "object")
+            throw new TypeValidationError(`Expected object, got ${typeof this.value}`);
         return new Validator(this.value);
     }
     /**
@@ -145,6 +161,10 @@ class Validator {
     }
     isBigInt() {
         return typeof this.value === "bigint";
+    }
+    isObject() {
+        return this.value !== null &&
+            typeof this.value === "object";
     }
     isFunction() {
         return typeof this.value === "function" &&
@@ -256,6 +276,12 @@ class Validator {
         if (typeof value !== "bigint")
             throw new TypeValidationError(`Expected BigInt, got ${typeof value}`);
     }
+    static object(value) {
+        if (value === null)
+            throw new TypeValidationError(`Expected object, got null`);
+        if (typeof value !== "object")
+            throw new TypeValidationError(`Expected object, got ${typeof value}`);
+    }
     static function(value) {
         if (typeof value !== "function")
             throw new TypeValidationError(`Expected function, got ${typeof value}`);
@@ -319,6 +345,12 @@ class Validator {
             if (typeof value !== "bigint")
                 throw new TypeValidationError(`Expected BigInt, got ${typeof value}`);
         },
+        object(value) {
+            if (value === null)
+                return;
+            if (typeof value !== "object")
+                throw new TypeValidationError(`Expected object, got ${typeof value}`);
+        },
         function(value) {
             if (value === null)
                 return;
@@ -355,7 +387,7 @@ class Validator {
         return new Validator(this.value);
     }
     /**
-     * @deprecated in order to not break cuz making a typo here is fine but in a project that could be used by others it might be PAIN
+     * @deprecated use `nullable` instead. made in order to not break cuz making a typo here is fine but in a project that could be used by others it might be PAIN
      */
     static nullible = Validator.nullable;
     get() {
