@@ -11,6 +11,7 @@ export type TypeStringMap = {
   "boolean":   boolean,
   "symbol":    symbol,
   "bigint":    bigint,
+  "object":    object,
   "function":  ( ...args: any[] ) => any,
   "class":     new ( ...args: any[] ) => any,
   "undefined": undefined,
@@ -25,6 +26,7 @@ type IsString< T >    = T extends string    ? T : never;
 type IsBoolean< T >   = T extends boolean   ? T : never;
 type IsSymbol< T >    = T extends symbol    ? T : never;
 type IsBigint< T >    = T extends bigint    ? T : never;
+type IsObject< T >    = T extends object    ? T : never;
 type IsFunction< T >  = T extends TypeStringMap[ "function" ] ? T : never;
 type IsClass< T >     = T extends TypeStringMap[ "class" ] ? T : never;
 type IsUndefined< T > = T extends undefined ? T : never;
@@ -81,6 +83,11 @@ export class Validator< T > {
     return new Validator( this.value )
   }
 
+  /**
+   * Checks if the value is an array.
+   * @throws { TypeValidationError } If value is not an array.
+   * @returns A new wrapper containing an array.
+   */
   array(): Validator< T & unknown[] > {
     if( !Array.isArray( this.value ) )
       throw new TypeValidationError( `Expected array, got ${ typeof this.value }` )
@@ -108,6 +115,20 @@ export class Validator< T > {
   bigint(): Validator< bigint > {
     if( typeof this.value !== "bigint" )
       throw new TypeValidationError( `Expected bigint, got ${ typeof this.value }` )
+
+    return new Validator( this.value )
+  }
+
+  /**
+   * Checks if the value is a basic object (non-function)
+   * 
+   */
+  object(): Validator< object > {
+    if( this.value === null )
+      throw new TypeValidationError( `Expected object, got null`)
+
+    if( typeof this.value !== "object" )
+      throw new TypeValidationError( `Expected object, got ${ typeof this.value }`)
 
     return new Validator( this.value )
   }
@@ -206,6 +227,11 @@ export class Validator< T > {
 
   isBigInt() {
     return typeof this.value === "bigint"
+  }
+
+  isObject() {
+    return this.value !== null &&
+           typeof this.value === "object"
   }
 
   isFunction() {
@@ -367,6 +393,14 @@ export class Validator< T > {
       throw new TypeValidationError( `Expected BigInt, got ${ typeof value }` )
   } 
 
+  static object( value: unknown ): asserts value is object {
+    if( value === null )
+      throw new TypeValidationError( `Expected object, got null`)
+
+    if( typeof value !== "object" )
+      throw new TypeValidationError( `Expected object, got ${ typeof value }`)
+  }
+
   static function( value: unknown ): asserts value is TypeStringMap[ "function" ] {
     if( typeof value !== "function" )
       throw new TypeValidationError( `Expected function, got ${ typeof value }` )
@@ -437,6 +471,12 @@ export class Validator< T > {
       if( value === null ) return
       if( typeof value !== "bigint" )
         throw new TypeValidationError( `Expected BigInt, got ${ typeof value }` )
+    },
+
+    object( value: unknown ): asserts value is object | null {
+      if( value === null ) return
+      if( typeof value !== "object" )
+        throw new TypeValidationError( `Expected object, got ${ typeof value }` )
     },
 
     function( value: unknown ): asserts value is TypeStringMap[ "function" ] | null {
