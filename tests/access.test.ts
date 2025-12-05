@@ -1,29 +1,29 @@
 import { TypeValidationError, Validator } from "../dist/main"
 
 describe( "Access methods", () => {
-  test( "checks has()", () => {
-    expect( new Validator( [ 1, 2, 3 ] ).has( 1 ) ).toBe( true  )
-    expect( new Validator( [ 1, 2, 3 ] ).has( 4 ) ).toBe( false )
+  test( "checks containsProperty()", () => {
+    expect( new Validator( [ 1, 2, 3 ] ).containsProperty( 1 ) ).toBe( true  )
+    expect( new Validator( [ 1, 2, 3 ] ).containsProperty( 4 ) ).toBe( false )
 
-    expect( new Validator( Array ).has( "of" ) ).toBe( true )
+    expect( new Validator( Array ).containsProperty( "of" ) ).toBe( true )
 
-    expect( new Validator( Object ).has( "keys" ) ).toBe( true )
+    expect( new Validator( Object ).containsProperty( "keys" ) ).toBe( true )
 
     // primitives have prototype funtions too
-    expect( new Validator( 9 ).has( "toExponential" ))
+    expect( new Validator( 9 ).containsProperty( "toExponential" ))
     
     // linter does the job, uncomment to show
 
-    // expect( new Validator( Array ).has( "abc" ) ).toBe( false )
-    // expect( () => new Validator( Function ).has( "abcabc" ) ).toBe( false )
+    // expect( new Validator( Array ).containsProperty( "abc" ) ).toBe( false )
+    // expect( () => new Validator( Function ).containsProperty( "abcabc" ) ).toBe( false )
   } )
 
-  test( "checks at()", () => {
-    expect( new Validator( [ 1, 2, 3 ] ).at( 1 ).get() ).toBe( 2 )
-    expect( new Validator( Array       ).at( "of" ).get() ).toBe( Array.of )
-    expect( new Validator( Object      ).at( "keys" ).get() ).toBe( Object.keys )
-    expect( new Validator( 9           ).at( "toExponential" ).get() ).toBe( Number.prototype.toExponential )
+  test( "checks assertAndSelectProperty()", () => {
+    expect( new Validator( [ 1, 2, 3 ] ).assertAndSelectProperty( 1 ).getValue() ).toBe( 2 )
+    expect( new Validator( Array       ).assertAndSelectProperty( "of" ).getValue() ).toBe( Array.of )
+    expect( new Validator( Object      ).assertAndSelectProperty( "keys" ).getValue() ).toBe( Object.keys )
+    expect( new Validator( 9           ).assertAndSelectProperty( "toExponential" ).getValue() ).toBe( Number.prototype.toExponential )
 
-    expect( () => new Validator( [ 1, 2, 3 ] ).at( 4 ) ).toThrow( TypeValidationError )
+    expect( () => new Validator( [ 1, 2, 3 ] ).assertAndSelectProperty( 4 ) ).toThrow( TypeValidationError )
   } )
 } )

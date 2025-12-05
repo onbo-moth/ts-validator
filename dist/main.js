@@ -15,134 +15,6 @@ class Validator {
     constructor(value) {
         this.value = value;
     }
-    // #region Basic type checks
-    /**
-     * Checks if the value is a number.
-     * @throws { TypeValidationError } If value is not a number.
-     * @returns A new wrapper containing a number.
-     */
-    number() {
-        if (typeof this.value !== "number")
-            throw new TypeValidationError(`Expected number, got ${typeof this.value}`);
-        return new Validator(this.value);
-    }
-    /**
-     * Checks if the value is a string.
-     * @throws { TypeValidationError } If value is not a string.
-     * @returns A new wrapper containing a string.
-     */
-    string() {
-        if (typeof this.value !== "string")
-            throw new TypeValidationError(`Expected string, got ${typeof this.value}`);
-        return new Validator(this.value);
-    }
-    /**
-     * Checks if the value is a boolean.
-     * @throws { TypeValidationError } If value is not a boolean.
-     * @returns A new wrapper containing a boolean.
-     */
-    boolean() {
-        if (typeof this.value !== "boolean")
-            throw new TypeValidationError(`Expected boolean, got ${typeof this.value}`);
-        return new Validator(this.value);
-    }
-    /**
-     * Checks if the value is an array.
-     * @throws { TypeValidationError } If value is not an array.
-     * @returns A new wrapper containing an array.
-     */
-    array() {
-        if (!Array.isArray(this.value))
-            throw new TypeValidationError(`Expected array, got ${typeof this.value}`);
-        return new Validator(this.value);
-    }
-    /**
-     * Checks if the value is a symbol.
-     * @throws { TypeValidationError } If value is not a symbol.
-     * @returns A new wrapper containing a symbol.
-     */
-    symbol() {
-        if (typeof this.value !== "symbol")
-            throw new TypeValidationError(`Expected symbol, got ${typeof this.value}`);
-        return new Validator(this.value);
-    }
-    /**
-     * Checks if the value is a BigInt.
-     * @throws { TypeValidationError } If value is not a BigInt.
-     * @returns A new wrapper containing a BigInt.
-     */
-    bigint() {
-        if (typeof this.value !== "bigint")
-            throw new TypeValidationError(`Expected bigint, got ${typeof this.value}`);
-        return new Validator(this.value);
-    }
-    /**
-     * Checks if the value is a basic object (non-function)
-     *
-     */
-    object() {
-        if (this.value === null)
-            throw new TypeValidationError(`Expected object, got null`);
-        if (typeof this.value !== "object")
-            throw new TypeValidationError(`Expected object, got ${typeof this.value}`);
-        return new Validator(this.value);
-    }
-    /**
-     * Checks if the value is a function and not a class constructor.
-     * @throws { TypeValidationError } If value is not a function, or is a constructor.
-     * @returns A new wrapper containing a function.
-     */
-    function() {
-        if (typeof this.value !== "function")
-            throw new TypeValidationError(`Expected function, got ${typeof this.value}`);
-        if (this.value.prototype && this.value.prototype.constructor === this.value)
-            throw new TypeValidationError(`Expected function, got class constructor ${this.value}`);
-        return new Validator(this.value);
-    }
-    /**
-     * Checks if the value is a constructor.
-     * @throws { TypeValidationError } If value is not a constructor.
-     * @returns A new wrapper containing a constructor.
-     */
-    class() {
-        if (typeof this.value !== "function" ||
-            !this.value.prototype ||
-            this.value.prototype.constructor !== this.value)
-            throw new TypeValidationError(`Expected class, got ${typeof this.value}`);
-        return new Validator(this.value);
-    }
-    /**
-     * Checks if the value is undefined.
-     * @throws { TypeValidationError } If value is not undefined.
-     * @returns A new wrapper containing undefined.
-     */
-    undefined() {
-        if (this.value !== undefined)
-            throw new TypeValidationError(`Expected undefined, got ${typeof this.value}`);
-        return new Validator(this.value);
-    }
-    /**
-     * Checks if the value is null.
-     * @throws { TypeValidationError } If value is not null.
-     * @returns A new wrapper containing null.
-     */
-    null() {
-        if (this.value !== null)
-            throw new TypeValidationError(`Expected null, got ${typeof this.value}`);
-        return new Validator(this.value);
-    }
-    /**
-     * Checks if the value is a instance of a given class.
-     * @param constructor Class constructor.
-     * @throws { TypeValidationError } If value is not a instance of the class.
-     * @returns A new wrapper containing a value known to be an instance.
-     */
-    instance(constructor) {
-        if (!(this.value instanceof constructor))
-            throw new TypeValidationError(`Expected value to be an instance of ${constructor}, got ${this.value}`);
-        return new Validator(this.value);
-    }
-    // #endregion
     // #region Checking methods
     isNumber() {
         return typeof this.value === "number";
@@ -171,7 +43,7 @@ class Validator {
             !(this.value.prototype &&
                 this.value.prototype.constructor === this.value);
     }
-    isClass() {
+    isConstructor() {
         return typeof this.value === "function" &&
             this.value.prototype &&
             this.value.prototype.constructor === this.value;
@@ -183,6 +55,271 @@ class Validator {
         return this.value === null;
     }
     // #endregion
+    // #region Basic type checks
+    /**
+     * Checks if the value is a number.
+     * @throws { TypeValidationError } If value is not a number.
+     * @returns A new wrapper containing a number.
+     */
+    assertToNumber() {
+        if (typeof this.value !== "number")
+            throw new TypeValidationError(`Expected number, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a string.
+     * @throws { TypeValidationError } If value is not a string.
+     * @returns A new wrapper containing a string.
+     */
+    assertToString() {
+        if (typeof this.value !== "string")
+            throw new TypeValidationError(`Expected string, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a boolean.
+     * @throws { TypeValidationError } If value is not a boolean.
+     * @returns A new wrapper containing a boolean.
+     */
+    assertToBoolean() {
+        if (typeof this.value !== "boolean")
+            throw new TypeValidationError(`Expected boolean, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is an array.
+     * @throws { TypeValidationError } If value is not an array.
+     * @returns A new wrapper containing an array.
+     */
+    assertToArray() {
+        if (!Array.isArray(this.value))
+            throw new TypeValidationError(`Expected array, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a symbol.
+     * @throws { TypeValidationError } If value is not a symbol.
+     * @returns A new wrapper containing a symbol.
+     */
+    assertToSymbol() {
+        if (typeof this.value !== "symbol")
+            throw new TypeValidationError(`Expected symbol, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a BigInt.
+     * @throws { TypeValidationError } If value is not a BigInt.
+     * @returns A new wrapper containing a BigInt.
+     */
+    assertToBigInt() {
+        if (typeof this.value !== "bigint")
+            throw new TypeValidationError(`Expected bigint, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a basic object (non-function)
+     *
+     */
+    assertToObject() {
+        if (this.value === null)
+            throw new TypeValidationError(`Expected object, got null`);
+        if (typeof this.value !== "object")
+            throw new TypeValidationError(`Expected object, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a function and not a class constructor.
+     * @throws { TypeValidationError } If value is not a function, or is a constructor.
+     * @returns A new wrapper containing a function.
+     */
+    assertToFunction() {
+        if (typeof this.value !== "function")
+            throw new TypeValidationError(`Expected function, got ${typeof this.value}`);
+        if (this.value.prototype && this.value.prototype.constructor === this.value)
+            throw new TypeValidationError(`Expected function, got class constructor ${this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a constructor.
+     * @throws { TypeValidationError } If value is not a constructor.
+     * @returns A new wrapper containing a constructor.
+     */
+    assertToConstructor() {
+        if (typeof this.value !== "function" ||
+            !this.value.prototype ||
+            this.value.prototype.constructor !== this.value)
+            throw new TypeValidationError(`Expected class, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is undefined.
+     * @throws { TypeValidationError } If value is not undefined.
+     * @returns A new wrapper containing undefined.
+     */
+    assertToUndefined() {
+        if (this.value !== undefined)
+            throw new TypeValidationError(`Expected undefined, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is null.
+     * @throws { TypeValidationError } If value is not null.
+     * @returns A new wrapper containing null.
+     */
+    assertToNull() {
+        if (this.value !== null)
+            throw new TypeValidationError(`Expected null, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a instance of a given class.
+     * @param constructor Class constructor.
+     * @throws { TypeValidationError } If value is not a instance of the class.
+     * @returns A new wrapper containing a value known to be an instance.
+     */
+    assertInstanceOf(constructor) {
+        if (!(this.value instanceof constructor))
+            throw new TypeValidationError(`Expected value to be an instance of ${constructor}, got ${this.value}`);
+        return new Validator(this.value);
+    }
+    // #endregion
+    // #region Nullable checks
+    /**
+     * Checks if the value is a number or a null.
+     * @throws { TypeValidationError } If value is not a number nor null.
+     * @returns A new wrapper containing a number or a null.
+     */
+    assertToNumberOrNull() {
+        if (this.value === null)
+            return new Validator(null);
+        if (typeof this.value !== "number")
+            throw new TypeValidationError(`Expected number or null, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a string or a null.
+     * @throws { TypeValidationError } If value is not a string nor null.
+     * @returns A new wrapper containing a string or a null.
+     */
+    assertToStringOrNull() {
+        if (this.value === null)
+            return new Validator(null);
+        if (typeof this.value !== "string")
+            throw new TypeValidationError(`Expected string or null, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a boolean or a null.
+     * @throws { TypeValidationError } If value is not a boolean nor null.
+     * @returns A new wrapper containing a boolean or a null.
+     */
+    assertToBooleanOrNull() {
+        if (this.value === null)
+            return new Validator(null);
+        if (typeof this.value !== "boolean")
+            throw new TypeValidationError(`Expected boolean or null, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is an array or a null.
+     * @throws { TypeValidationError } If value is not an array nor null.
+     * @returns A new wrapper containing an array or a null.
+     */
+    assertToArrayOrNull() {
+        if (this.value === null)
+            return new Validator(null);
+        if (!Array.isArray(this.value))
+            throw new TypeValidationError(`Expected array or null, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a symbol or null.
+     * @throws { TypeValidationError } If value is not a symbol nor null.
+     * @returns A new wrapper containing a symbol or a null.
+     */
+    assertToSymbolOrNull() {
+        if (this.value === null)
+            return new Validator(null);
+        if (typeof this.value !== "symbol")
+            throw new TypeValidationError(`Expected symbol, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a BigInt or null.
+     * @throws { TypeValidationError } If value is not a BigInt nor null.
+     * @returns A new wrapper containing a BigInt or a null.
+     */
+    assertToBigIntOrNull() {
+        if (this.value === null)
+            return new Validator(null);
+        if (typeof this.value !== "bigint")
+            throw new TypeValidationError(`Expected bigint, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is an object or null.
+     * @throws { TypeValidationError } If value is not an object nor null.
+     * @returns A new wrapper containing an object or a null.
+     */
+    assertToObjectOrNull() {
+        if (typeof this.value !== "object") // yes null is an object
+            throw new TypeValidationError(`Expected object or null, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a function or null and not a class constructor.
+     * @throws { TypeValidationError } If value is not a function nor null, or is a constructor.
+     * @returns A new wrapper containing a function or a null.
+     */
+    assertToFunctionOrNull() {
+        if (this.value === null)
+            return new Validator(null);
+        if (typeof this.value !== "function")
+            throw new TypeValidationError(`Expected function or null, got ${typeof this.value}`);
+        if (this.value.prototype && this.value.prototype.constructor === this.value)
+            throw new TypeValidationError(`Expected function, got class constructor ${this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a constructor or null.
+     * @throws { TypeValidationError } If value is not a constructor nor null.
+     * @returns A new wrapper containing a constructor or null.
+     */
+    assertToConstructorOrNull() {
+        if (this.value === null)
+            return new Validator(null);
+        if (typeof this.value !== "function" ||
+            !this.value.prototype ||
+            this.value.prototype.constructor !== this.value)
+            throw new TypeValidationError(`Expected class or null, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is undefined or null.
+     * @throws { TypeValidationError } If value is not undefined nor null.
+     * @returns A new wrapper containing undefined or null.
+     */
+    assertToUndefinedOrNull() {
+        if (this.value === null)
+            return new Validator(null);
+        if (this.value !== undefined)
+            throw new TypeValidationError(`Expected undefined or null, got ${typeof this.value}`);
+        return new Validator(this.value);
+    }
+    /**
+     * Checks if the value is a instance of a given class.
+     * @param constructor Class constructor.
+     * @throws { TypeValidationError } If value is not a instance of the class.
+     * @returns A new wrapper containing a value known to be an instance.
+     */
+    assertInstanceOfOrNull(constructor) {
+        if (this.value === null)
+            return new Validator(null);
+        if (!(this.value instanceof constructor))
+            throw new TypeValidationError(`Expected value to be an instance of ${constructor}, got ${this.value}`);
+        return new Validator(this.value);
+    }
+    // #endregion
     // #region Access methods
     /**
      * Checks if value contains a valid key.
@@ -190,7 +327,7 @@ class Validator {
      * @throws { TypeValidationError } If value is undefined or null.
      * @returns Boolean indicating presence of given key.
      */
-    has(key) {
+    containsProperty(key) {
         if (typeof this.value === "undefined" ||
             this.value === null)
             throw new TypeValidationError("Value is undefined or null.");
@@ -203,7 +340,7 @@ class Validator {
      * @throws { TypeValidationError } If value is undefined or null, or if the key doesn't exist.
      * @returns A new validator wrapper for the value contained in the key.
      */
-    at(key) {
+    assertAndSelectProperty(key) {
         if (typeof this.value === "undefined" ||
             this.value === null)
             throw new TypeValidationError("Value is undefined or null.");
@@ -219,7 +356,7 @@ class Validator {
      * @param checker Checker function that throws if array value doesn't satisfy type validation.
      * @throws { TypeValidationError } If value is not an array or if checker throws.
      */
-    arrayOf(checker) {
+    assertArrayOf(checker) {
         if (!Array.isArray(this.value))
             throw new TypeValidationError(`Expected array, got ${typeof this.value}`);
         this.value.forEach(element => {
@@ -237,7 +374,7 @@ class Validator {
      * @throws { TypeValidationError } If value's property fails assertion function.
      * @returns
      */
-    contains(object) {
+    assertContains(object) {
         if (typeof this.value === "undefined" || this.value === null)
             throw new TypeValidationError(`Value is undefined or null.`);
         const val = Object(this.value);
@@ -252,62 +389,130 @@ class Validator {
     }
     // #endregion
     // #region Static assertion methods
-    static number(value) {
+    static assertToNumber(value) {
         if (typeof value !== "number")
             throw new TypeValidationError(`Expected number, got ${typeof value}`);
     }
-    static string(value) {
+    static assertToString(value) {
         if (typeof value !== "string")
             throw new TypeValidationError(`Expected string, got ${typeof value}`);
     }
-    static boolean(value) {
+    static assertToBoolean(value) {
         if (typeof value !== "boolean")
             throw new TypeValidationError(`Expected boolean, got ${typeof value}`);
     }
-    static array(value) {
+    static assertToArray(value) {
         if (!Array.isArray(value))
             throw new TypeValidationError(`Expected array, got ${typeof value}`);
     }
-    static symbol(value) {
+    static assertToSymbol(value) {
         if (typeof value !== "symbol")
             throw new TypeValidationError(`Expected symbol, got ${typeof value}`);
     }
-    static bigint(value) {
+    static assertToBigInt(value) {
         if (typeof value !== "bigint")
             throw new TypeValidationError(`Expected BigInt, got ${typeof value}`);
     }
-    static object(value) {
+    static assertToObject(value) {
         if (value === null)
             throw new TypeValidationError(`Expected object, got null`);
         if (typeof value !== "object")
             throw new TypeValidationError(`Expected object, got ${typeof value}`);
     }
-    static function(value) {
+    static assertToFunction(value) {
         if (typeof value !== "function")
             throw new TypeValidationError(`Expected function, got ${typeof value}`);
         if (value.prototype && value.prototype.constructor === value)
             throw new TypeValidationError(`Expected function, got class constructor ${value}`);
     }
-    static class(value) {
+    static assertToConstructor(value) {
         if (typeof value !== "function" ||
             !value.prototype ||
             value.prototype.constructor !== value)
             throw new TypeValidationError(`Expected class, got ${typeof value}`);
     }
-    static undefined(value) {
+    static assertToUndefined(value) {
         if (value !== undefined)
             throw new TypeValidationError(`Expected undefined, got ${typeof value}`);
     }
-    static null(value) {
+    static assertToNull(value) {
         if (value !== null)
             throw new TypeValidationError(`Expected null, got ${typeof value}`);
     }
-    static instance(value, constructor) {
+    static assertInstanceOf(value, constructor) {
         if (!(value instanceof constructor))
             throw new TypeValidationError(`Expected value to be an instance of ${constructor}, got ${value}`);
     }
     // #endregion
-    // #region Static nullable assertion methods.
+    // #region Nullable static assertion methods
+    static assertToNumberOrNull(value) {
+        if (value === null)
+            return;
+        if (typeof value !== "number")
+            throw new TypeValidationError(`Expected number or null, got ${typeof value}`);
+    }
+    static assertToStringOrNull(value) {
+        if (value === null)
+            return;
+        if (typeof value !== "string")
+            throw new TypeValidationError(`Expected string or null, got ${typeof value}`);
+    }
+    static assertToBooleanOrNull(value) {
+        if (value === null)
+            return;
+        if (typeof value !== "boolean")
+            throw new TypeValidationError(`Expected boolean or null, got ${typeof value}`);
+    }
+    static assertToArrayOrNull(value) {
+        if (value === null)
+            return;
+        if (!Array.isArray(value))
+            throw new TypeValidationError(`Expected array or null, got ${typeof value}`);
+    }
+    static assertToSymbolOrNull(value) {
+        if (value === null)
+            return;
+        if (typeof value !== "symbol")
+            throw new TypeValidationError(`Expected symbol or null, got ${typeof value}`);
+    }
+    static assertToBigIntOrNull(value) {
+        if (value === null)
+            return;
+        if (typeof value !== "bigint")
+            throw new TypeValidationError(`Expected BigInt or null, got ${typeof value}`);
+    }
+    static assertToObjectOrNull(value) {
+        if (value === null)
+            return;
+        if (typeof value !== "object")
+            throw new TypeValidationError(`Expected object or null, got ${typeof value}`);
+    }
+    static assertToFunctionOrNull(value) {
+        if (value === null)
+            return;
+        if (typeof value !== "function")
+            throw new TypeValidationError(`Expected function or null, got ${typeof value}`);
+        if (value.prototype && value.prototype.constructor === value)
+            throw new TypeValidationError(`Expected function, got class constructor ${value}`);
+    }
+    static assertToConstructorOrNull(value) {
+        if (value === null)
+            return;
+        if (typeof value !== "function" ||
+            !value.prototype ||
+            value.prototype.constructor !== value)
+            throw new TypeValidationError(`Expected constructor or null, got ${typeof value}`);
+    }
+    static assertToUndefinedOrNull(value) {
+        if (value === null)
+            return;
+        if (value !== undefined)
+            throw new TypeValidationError(`Expected undefined or null, got ${typeof value}`);
+    }
+    // #endregion
+    /**
+     * @deprecated use `assertToNumberOrNull()` and similar methods instead
+     */
     static nullable = {
         number(value) {
             if (value === null)
@@ -380,7 +585,6 @@ class Validator {
                 throw new TypeValidationError(`Expected value to be an instance of ${constructor}, got ${value}`);
         }
     };
-    // #endregion
     assert(func) {
         func(this.value);
         // i guess it doesnt error out soo
@@ -390,7 +594,7 @@ class Validator {
      * @deprecated use `nullable` instead. made in order to not break cuz making a typo here is fine but in a project that could be used by others it might be PAIN
      */
     static nullible = Validator.nullable;
-    get() {
+    getValue() {
         return this.value;
     }
 }
